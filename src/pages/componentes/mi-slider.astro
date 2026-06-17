@@ -1,0 +1,130 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Playground from '../../components/doc/Playground.astro';
+import CodeTabs from '../../components/doc/CodeTabs.astro';
+
+import sliderSrc from '../../components/web-components/mi-slider.js?raw';
+
+import SliderReact from '../../components/islands/SliderDemo.jsx';
+import SliderVue from '../../components/islands/SliderDemo.vue';
+import SliderSvelte from '../../components/islands/SliderDemo.svelte';
+
+const ejemploInicial = `<mi-slider min="0" max="100" value="50" step="5" style="max-width: 300px;">
+  <mi-slider-label>0°C</mi-slider-label>
+  <mi-slider-label position="25">25°C</mi-slider-label>
+  <mi-slider-label position="50">50°C</mi-slider-label>
+  <mi-slider-label position="75">75°C</mi-slider-label>
+  <mi-slider-label position="100">100°C</mi-slider-label>
+</mi-slider>`;
+
+const htmlCode = `<mi-slider min="0" max="100" value="50" step="5">
+  <mi-slider-label>0</mi-slider-label>
+  <mi-slider-label position="50">50</mi-slider-label>
+  <mi-slider-label position="100">100</mi-slider-label>
+</mi-slider>
+
+<script>
+  document.querySelector('mi-slider')
+    .addEventListener('change', (e) => console.log(e.detail.value));
+<\/script>`;
+
+const reactCode = `import { useEffect, useRef, useState } from 'react';
+
+export default function SliderDemo() {
+  const ref = useRef(null);
+  const [valor, setValor] = useState(50);
+
+  useEffect(() => {
+    const el = ref.current;
+    const onChange = (e) => setValor(e.detail.value);
+    el.addEventListener('change', onChange);
+    return () => el.removeEventListener('change', onChange);
+  }, []);
+
+  return (
+    <mi-slider ref={ref} min="0" max="100" value="50" step="5">
+      <mi-slider-label>0</mi-slider-label>
+      <mi-slider-label position="100">100</mi-slider-label>
+    </mi-slider>
+  );
+}`;
+
+const vueCode = `<script setup>
+import { ref } from 'vue';
+const valor = ref(50);
+const onChange = (e) => (valor.value = e.detail.value);
+<\/script>
+
+<template>
+  <mi-slider @change="onChange" min="0" max="100" value="50" step="5">
+    <mi-slider-label>0</mi-slider-label>
+    <mi-slider-label position="100">100</mi-slider-label>
+  </mi-slider>
+</template>`;
+
+const svelteCode = `<script>
+  import { onMount } from 'svelte';
+  let el;
+  let valor = 50;
+  onMount(() => {
+    const onChange = (e) => (valor = e.detail.value);
+    el.addEventListener('change', onChange);
+    return () => el.removeEventListener('change', onChange);
+  });
+<\/script>
+
+<mi-slider bind:this={el} min="0" max="100" value="50" step="5">
+  <mi-slider-label>0</mi-slider-label>
+  <mi-slider-label position="100">100</mi-slider-label>
+</mi-slider>`;
+---
+
+<DocsLayout title="Slider">
+  <p class="eyebrow">Componente · 02</p>
+  <h1>&lt;mi-slider&gt;</h1>
+  <p class="lead">Un control deslizante con burbuja de valor y etiquetas posicionadas.</p>
+
+  <p>
+    Atributos <code>min</code>, <code>max</code>, <code>value</code> y <code>step</code>.
+    Las etiquetas se pasan como hijos <code>&lt;mi-slider-label&gt;</code> con un atributo
+    <code>position</code> (porcentaje). Emite <code>change</code> con <code>detail.value</code>.
+  </p>
+
+  <h2>Pruébalo</h2>
+  <p>Mueve el slider y mira la burbuja. Vive dentro de su propio shadow boundary.</p>
+  <Playground code={ejemploInicial} modules={[sliderSrc]} height={120} />
+
+  <h2>El mismo componente, en cada framework</h2>
+  <p>
+    El mismo <code>&lt;mi-slider&gt;</code>. Solo cambia cómo cada framework se
+    suscribe a su evento <code>change</code>.
+  </p>
+
+  <CodeTabs
+    tabs={[
+      { label: 'HTML', lang: 'html', code: htmlCode },
+      { label: 'React', lang: 'jsx', code: reactCode },
+      { label: 'Vue', lang: 'vue', code: vueCode },
+      { label: 'Svelte', lang: 'svelte', code: svelteCode },
+    ]}
+  />
+
+  <div class="note">
+    <strong>El detalle que vale documentar:</strong> las etiquetas
+    (<code>&lt;mi-slider-label&gt;</code>) se pasan como hijos y el componente las
+    reposiciona por dentro según su atributo <code>position</code>. La página no sabe
+    cómo se dibuja la barra; solo le entrega datos.
+  </div>
+
+  <h2>Islas vivas</h2>
+  <p>Las tres demos de abajo son islas reales hidratadas, cada una en su framework:</p>
+
+  <p class="eyebrow">React</p>
+  <SliderReact client:visible />
+
+  <p class="eyebrow">Vue</p>
+  <SliderVue client:visible />
+
+  <p class="eyebrow">Svelte</p>
+  <SliderSvelte client:visible />
+</DocsLayout>

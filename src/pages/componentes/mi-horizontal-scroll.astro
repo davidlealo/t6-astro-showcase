@@ -1,0 +1,110 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Playground from '../../components/doc/Playground.astro';
+import CodeTabs from '../../components/doc/CodeTabs.astro';
+
+// Este es el caso especial: el playground necesita DOS fuentes, porque la
+// demo mete <mi-card> dentro del <mi-horizontal-scroll>.
+import scrollSrc from '../../components/web-components/mi-horizontal-scroll.js?raw';
+import cardSrc   from '../../components/web-components/mi-card.js?raw';
+
+import ScrollReact from '../../components/islands/ScrollDemo.jsx';
+import ScrollVue from '../../components/islands/ScrollDemo.vue';
+import ScrollSvelte from '../../components/islands/ScrollDemo.svelte';
+
+const ejemploInicial = `<mi-horizontal-scroll>
+  <mi-card>Card 1</mi-card>
+  <mi-card>Card 2</mi-card>
+  <mi-card>Card 3</mi-card>
+  <mi-card>Card 4</mi-card>
+  <mi-card>Card 5</mi-card>
+</mi-horizontal-scroll>`;
+
+const htmlCode = `<mi-horizontal-scroll>
+  <mi-card>Card 1</mi-card>
+  <mi-card>Card 2</mi-card>
+  <mi-card>Card 3</mi-card>
+</mi-horizontal-scroll>`;
+
+const reactCode = `// Composición: tarjetas dentro del scroll. No emite eventos.
+export default function ScrollDemo() {
+  return (
+    <mi-horizontal-scroll>
+      <mi-card>Card 1</mi-card>
+      <mi-card>Card 2</mi-card>
+      <mi-card>Card 3</mi-card>
+      <mi-card>Card 4</mi-card>
+      <mi-card>Card 5</mi-card>
+    </mi-horizontal-scroll>
+  );
+}`;
+
+const vueCode = `<template>
+  <mi-horizontal-scroll>
+    <mi-card>Card 1</mi-card>
+    <mi-card>Card 2</mi-card>
+    <mi-card>Card 3</mi-card>
+    <mi-card>Card 4</mi-card>
+    <mi-card>Card 5</mi-card>
+  </mi-horizontal-scroll>
+</template>`;
+
+const svelteCode = `<mi-horizontal-scroll>
+  <mi-card>Card 1</mi-card>
+  <mi-card>Card 2</mi-card>
+  <mi-card>Card 3</mi-card>
+  <mi-card>Card 4</mi-card>
+  <mi-card>Card 5</mi-card>
+</mi-horizontal-scroll>`;
+---
+
+<DocsLayout title="Horizontal scroll">
+  <p class="eyebrow">Componente · 07</p>
+  <h1>&lt;mi-horizontal-scroll&gt;</h1>
+  <p class="lead">Un contenedor que organiza a sus hijos en una fila desplazable horizontalmente.</p>
+
+  <p>
+    Sirve para carruseles, galerías o listas que no caben en el ancho. Es el ejemplo más
+    claro de <strong>composición</strong>: mete <code>&lt;mi-card&gt;</code> dentro y cada
+    componente ignora al otro. No emite eventos.
+  </p>
+
+  <h2>Pruébalo</h2>
+  <p>Agrega o saca tarjetas y mira el scroll. Aquí el playground inyecta dos componentes.</p>
+  <Playground code={ejemploInicial} modules={[scrollSrc, cardSrc]} height={170} />
+
+  <h2>El mismo componente, en cada framework</h2>
+  <p>
+    Dos web components anidados (<code>&lt;mi-horizontal-scroll&gt;</code> +
+    <code>&lt;mi-card&gt;</code>) que cada framework renderiza igual, sin saber nada de
+    su interior. Composición pura del estándar.
+  </p>
+
+  <CodeTabs
+    tabs={[
+      { label: 'HTML', lang: 'html', code: htmlCode },
+      { label: 'React', lang: 'jsx', code: reactCode },
+      { label: 'Vue', lang: 'vue', code: vueCode },
+      { label: 'Svelte', lang: 'svelte', code: svelteCode },
+    ]}
+  />
+
+  <div class="note">
+    <strong>El detalle que vale documentar:</strong> usa <code>::slotted(*)</code> para
+    evitar que las tarjetas se encojan, aplicando estilo a los hijos proyectados sin
+    sacarlos de su lugar. Y nota la doble inyección: <code>modules={[scrollSrc, cardSrc]}</code>,
+    porque la demo necesita los dos componentes registrados.
+  </div>
+
+  <h2>Islas vivas</h2>
+  <p>El mismo scroll con tarjetas renderizado por cada framework:</p>
+
+  <p class="eyebrow">React</p>
+  <ScrollReact client:visible />
+
+  <p class="eyebrow">Vue</p>
+  <ScrollVue client:visible />
+
+  <p class="eyebrow">Svelte</p>
+  <ScrollSvelte client:visible />
+</DocsLayout>

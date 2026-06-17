@@ -1,0 +1,98 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Playground from '../../components/doc/Playground.astro';
+import CodeTabs from '../../components/doc/CodeTabs.astro';
+
+import cardSrc from '../../components/web-components/mi-card.js?raw';
+
+import CardReact from '../../components/islands/CardDemo.jsx';
+import CardVue from '../../components/islands/CardDemo.vue';
+import CardSvelte from '../../components/islands/CardDemo.svelte';
+
+const ejemploInicial = `<mi-card style="--card-width:150px; --card-height:100px;">Tamaño custom</mi-card>
+<mi-card>Tamaño por defecto</mi-card>`;
+
+const htmlCode = `<mi-card class="custom">Custom size using CSS</mi-card>
+<mi-card>Default size</mi-card>
+
+<style>
+  mi-card.custom {
+    --card-width: 150px;
+    --card-height: 100px;
+  }
+<\/style>`;
+
+const reactCode = `// CSS custom properties como style inline: así se cruza el shadow boundary.
+export default function CardDemo() {
+  return (
+    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+      <mi-card style={{ '--card-width': '150px', '--card-height': '100px' }}>
+        Tamaño custom
+      </mi-card>
+      <mi-card>Tamaño por defecto</mi-card>
+    </div>
+  );
+}`;
+
+const vueCode = `<template>
+  <div style="display:flex; gap:16px; flex-wrap:wrap">
+    <mi-card style="--card-width:150px; --card-height:100px">Tamaño custom</mi-card>
+    <mi-card>Tamaño por defecto</mi-card>
+  </div>
+</template>`;
+
+const svelteCode = `<div style="display:flex; gap:16px; flex-wrap:wrap">
+  <mi-card style="--card-width:150px; --card-height:100px">Tamaño custom</mi-card>
+  <mi-card>Tamaño por defecto</mi-card>
+</div>`;
+---
+
+<DocsLayout title="Tarjeta">
+  <p class="eyebrow">Componente · 06</p>
+  <h1>&lt;mi-card&gt;</h1>
+  <p class="lead">Una tarjeta cuyo tamaño se controla desde fuera con CSS, sin tocar el componente.</p>
+
+  <p>
+    Define dos variables CSS — <code>--card-width</code> y <code>--card-height</code> —
+    con valores por defecto. La página las sobrescribe desde afuera. No emite eventos.
+  </p>
+
+  <h2>Pruébalo</h2>
+  <p>Cambia los valores de <code>--card-width</code>/<code>--card-height</code> y mira el efecto.</p>
+  <Playground code={ejemploInicial} modules={[cardSrc]} height={140} />
+
+  <h2>El mismo componente, en cada framework</h2>
+  <p>
+    El interés acá no es un evento, sino el <strong>estilo</strong>: cómo cada framework
+    pasa las variables CSS al mismo <code>&lt;mi-card&gt;</code>. En React van como objeto
+    de estilo; en Vue y Svelte, como string.
+  </p>
+
+  <CodeTabs
+    tabs={[
+      { label: 'HTML', lang: 'html', code: htmlCode },
+      { label: 'React', lang: 'jsx', code: reactCode },
+      { label: 'Vue', lang: 'vue', code: vueCode },
+      { label: 'Svelte', lang: 'svelte', code: svelteCode },
+    ]}
+  />
+
+  <div class="note">
+    <strong>El detalle que vale documentar:</strong> las <em>CSS custom properties</em>
+    son el único canal de estilo que cruza el shadow boundary. El componente las consume
+    por dentro con <code>var(--card-width, 120px)</code>; todo lo demás de su estilo queda
+    aislado y la página no lo puede tocar.
+  </div>
+
+  <h2>Islas vivas</h2>
+  <p>La misma tarjeta renderizada por cada framework:</p>
+
+  <p class="eyebrow">React</p>
+  <CardReact client:visible />
+
+  <p class="eyebrow">Vue</p>
+  <CardVue client:visible />
+
+  <p class="eyebrow">Svelte</p>
+  <CardSvelte client:visible />
+</DocsLayout>

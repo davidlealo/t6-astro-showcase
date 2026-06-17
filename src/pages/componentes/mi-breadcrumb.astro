@@ -1,0 +1,98 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Playground from '../../components/doc/Playground.astro';
+import CodeTabs from '../../components/doc/CodeTabs.astro';
+
+import breadcrumbSrc from '../../components/web-components/mi-breadcrumb.js?raw';
+
+import BreadcrumbReact from '../../components/islands/BreadcrumbDemo.jsx';
+import BreadcrumbVue from '../../components/islands/BreadcrumbDemo.vue';
+import BreadcrumbSvelte from '../../components/islands/BreadcrumbDemo.svelte';
+
+const ejemploInicial = `<mi-breadcrumb>
+  <mi-breadcrumb-item href="#">Home</mi-breadcrumb-item>
+  <mi-breadcrumb-item href="#">Productos</mi-breadcrumb-item>
+  <mi-breadcrumb-item>Detalle</mi-breadcrumb-item>
+</mi-breadcrumb>`;
+
+const htmlCode = `<mi-breadcrumb>
+  <mi-breadcrumb-item href="#">Home</mi-breadcrumb-item>
+  <mi-breadcrumb-item href="#">Productos</mi-breadcrumb-item>
+  <mi-breadcrumb-item>Detalle</mi-breadcrumb-item>
+</mi-breadcrumb>`;
+
+const reactCode = `// No emite eventos: la isla solo lo renderiza, sin ref ni listeners.
+export default function BreadcrumbDemo() {
+  return (
+    <mi-breadcrumb>
+      <mi-breadcrumb-item href="#">Home</mi-breadcrumb-item>
+      <mi-breadcrumb-item href="#">Productos</mi-breadcrumb-item>
+      <mi-breadcrumb-item>Detalle</mi-breadcrumb-item>
+    </mi-breadcrumb>
+  );
+}`;
+
+const vueCode = `<template>
+  <mi-breadcrumb>
+    <mi-breadcrumb-item href="#">Home</mi-breadcrumb-item>
+    <mi-breadcrumb-item href="#">Productos</mi-breadcrumb-item>
+    <mi-breadcrumb-item>Detalle</mi-breadcrumb-item>
+  </mi-breadcrumb>
+</template>`;
+
+const svelteCode = `<mi-breadcrumb>
+  <mi-breadcrumb-item href="#">Home</mi-breadcrumb-item>
+  <mi-breadcrumb-item href="#">Productos</mi-breadcrumb-item>
+  <mi-breadcrumb-item>Detalle</mi-breadcrumb-item>
+</mi-breadcrumb>`;
+---
+
+<DocsLayout title="Breadcrumb">
+  <p class="eyebrow">Componente · 04</p>
+  <h1>&lt;mi-breadcrumb&gt;</h1>
+  <p class="lead">Migas de pan para navegación: muestra la ruta jerárquica donde está el usuario.</p>
+
+  <p>
+    Cada <code>&lt;mi-breadcrumb-item&gt;</code> con <code>href</code> se convierte en un
+    enlace; el último, sin <code>href</code>, marca la ubicación actual. No emite eventos.
+  </p>
+
+  <h2>Pruébalo</h2>
+  <p>Edita los ítems y mira cómo se arma la ruta. Vive dentro de su propio shadow boundary.</p>
+  <Playground code={ejemploInicial} modules={[breadcrumbSrc]} height={90} />
+
+  <h2>El mismo componente, en cada framework</h2>
+  <p>
+    Como no emite eventos, no hay nada que "escuchar": cada framework simplemente
+    renderiza el mismo <code>&lt;mi-breadcrumb&gt;</code> con sus ítems como hijos.
+    Sin <code>ref</code>, sin listeners — el componente se basta solo.
+  </p>
+
+  <CodeTabs
+    tabs={[
+      { label: 'HTML', lang: 'html', code: htmlCode },
+      { label: 'React', lang: 'jsx', code: reactCode },
+      { label: 'Vue', lang: 'vue', code: vueCode },
+      { label: 'Svelte', lang: 'svelte', code: svelteCode },
+    ]}
+  />
+
+  <div class="note">
+    <strong>El detalle que vale documentar:</strong> cada ítem decide por sí mismo si
+    es un enlace (<code>&lt;a&gt;</code>) o la ubicación actual (<code>&lt;span&gt;</code>)
+    según tenga o no <code>href</code>. El separador <code>/</code> se dibuja con CSS
+    (<code>::after</code>) dentro del shadow DOM, no como texto en el markup.
+  </div>
+
+  <h2>Islas vivas</h2>
+  <p>El mismo breadcrumb renderizado por cada framework:</p>
+
+  <p class="eyebrow">React</p>
+  <BreadcrumbReact client:visible />
+
+  <p class="eyebrow">Vue</p>
+  <BreadcrumbVue client:visible />
+
+  <p class="eyebrow">Svelte</p>
+  <BreadcrumbSvelte client:visible />
+</DocsLayout>

@@ -1,0 +1,123 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Playground from '../../components/doc/Playground.astro';
+import CodeTabs from '../../components/doc/CodeTabs.astro';
+
+import accordionSrc from '../../components/web-components/mi-accordion.js?raw';
+
+import AccordionReact from '../../components/islands/AccordionDemo.jsx';
+import AccordionVue from '../../components/islands/AccordionDemo.vue';
+import AccordionSvelte from '../../components/islands/AccordionDemo.svelte';
+
+const ejemploInicial = `<mi-accordion style="max-width: 350px;">
+  <mi-accordion-item>
+    <span slot="heading">¿Qué es un web component?</span>
+    <div class="panel">Un elemento personalizado del estándar.</div>
+  </mi-accordion-item>
+  <mi-accordion-item>
+    <span slot="heading">¿Necesita framework?</span>
+    <div class="panel">No, es parte de la plataforma.</div>
+  </mi-accordion-item>
+</mi-accordion>`;
+
+const htmlCode = `<mi-accordion>
+  <mi-accordion-item>
+    <span slot="heading">Item 1</span>
+    <div>Panel one content</div>
+  </mi-accordion-item>
+  <mi-accordion-item>
+    <span slot="heading">Item 2</span>
+    <div>Panel 2 content</div>
+  </mi-accordion-item>
+</mi-accordion>`;
+
+const reactCode = `// No emite eventos: cada item togglea su atributo "open" solo.
+export default function AccordionDemo() {
+  return (
+    <mi-accordion style={{ maxWidth: 340 }}>
+      <mi-accordion-item>
+        <span slot="heading">Item 1</span>
+        <div>Panel one content</div>
+      </mi-accordion-item>
+      <mi-accordion-item>
+        <span slot="heading">Item 2</span>
+        <div>Panel 2 content</div>
+      </mi-accordion-item>
+    </mi-accordion>
+  );
+}`;
+
+const vueCode = `<template>
+  <mi-accordion style="max-width: 340px">
+    <mi-accordion-item>
+      <span slot="heading">Item 1</span>
+      <div>Panel one content</div>
+    </mi-accordion-item>
+    <mi-accordion-item>
+      <span slot="heading">Item 2</span>
+      <div>Panel 2 content</div>
+    </mi-accordion-item>
+  </mi-accordion>
+</template>`;
+
+const svelteCode = `<mi-accordion style="max-width: 340px">
+  <mi-accordion-item>
+    <span slot="heading">Item 1</span>
+    <div>Panel one content</div>
+  </mi-accordion-item>
+  <mi-accordion-item>
+    <span slot="heading">Item 2</span>
+    <div>Panel 2 content</div>
+  </mi-accordion-item>
+</mi-accordion>`;
+---
+
+<DocsLayout title="Acordeón">
+  <p class="eyebrow">Componente · 05</p>
+  <h1>&lt;mi-accordion&gt;</h1>
+  <p class="lead">Paneles colapsables: cada ítem oculta su contenido hasta que se hace clic.</p>
+
+  <p>
+    Composición de dos componentes: <code>&lt;mi-accordion&gt;</code> contiene varios
+    <code>&lt;mi-accordion-item&gt;</code>. El título va por el slot <code>heading</code>
+    y el contenido como hijo. Permite varios paneles abiertos a la vez.
+  </p>
+
+  <h2>Pruébalo</h2>
+  <p>Haz clic en los encabezados. Vive dentro de su propio shadow boundary.</p>
+  <Playground code={ejemploInicial} modules={[accordionSrc]} height={200} />
+
+  <h2>El mismo componente, en cada framework</h2>
+  <p>
+    No emite eventos: el clic y la animación los maneja el propio componente por dentro.
+    Cada framework solo renderiza el mismo <code>&lt;mi-accordion&gt;</code> con sus ítems.
+  </p>
+
+  <CodeTabs
+    tabs={[
+      { label: 'HTML', lang: 'html', code: htmlCode },
+      { label: 'React', lang: 'jsx', code: reactCode },
+      { label: 'Vue', lang: 'vue', code: vueCode },
+      { label: 'Svelte', lang: 'svelte', code: svelteCode },
+    ]}
+  />
+
+  <div class="note">
+    <strong>El detalle que vale documentar:</strong> al hacer clic, el ítem togglea su
+    atributo <code>open</code>, y toda la animación (<code>max-height</code> + rotación
+    del ícono) ocurre en el shadow DOM. El contenido del panel se pasa por slot, así que
+    cada ítem lo define la página.
+  </div>
+
+  <h2>Islas vivas</h2>
+  <p>El mismo acordeón renderizado por cada framework:</p>
+
+  <p class="eyebrow">React</p>
+  <AccordionReact client:visible />
+
+  <p class="eyebrow">Vue</p>
+  <AccordionVue client:visible />
+
+  <p class="eyebrow">Svelte</p>
+  <AccordionSvelte client:visible />
+</DocsLayout>

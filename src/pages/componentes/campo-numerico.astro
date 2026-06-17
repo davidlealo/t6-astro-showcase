@@ -1,0 +1,121 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Playground from '../../components/doc/Playground.astro';
+import CodeTabs from '../../components/doc/CodeTabs.astro';
+
+// Importamos el CÓDIGO FUENTE del web component como texto (?raw, de Vite)
+// para inyectarlo dentro del iframe del playground. Así el editor es
+// autocontenido y no depende de rutas.
+import campoSrc from '../../components/web-components/campo-numerico.js?raw';
+
+// Las tres islas reales (se renderizan vivas más abajo).
+import CampoReact from '../../components/islands/CampoDemo.jsx';
+import CampoVue from '../../components/islands/CampoDemo.vue';
+import CampoSvelte from '../../components/islands/CampoDemo.svelte';
+
+const ejemploInicial = `<campo-numerico value="0">Número:</campo-numerico>
+<campo-numerico value="42">Temperatura:</campo-numerico>`;
+
+const htmlCode = `<campo-numerico value="0">Número:</campo-numerico>
+
+<script>
+  document.querySelector('campo-numerico')
+    .addEventListener('change', (e) => console.log(e.detail.value));
+<\/script>`;
+
+const reactCode = `import { useEffect, useRef, useState } from 'react';
+
+export default function CampoDemo() {
+  const ref = useRef(null);
+  const [estado, setEstado] = useState(0);
+
+  // React no mapea CustomEvent a onChange: ref + addEventListener.
+  useEffect(() => {
+    const el = ref.current;
+    const onChange = (e) => setEstado(e.detail.value);
+    el.addEventListener('change', onChange);
+    return () => el.removeEventListener('change', onChange);
+  }, []);
+
+  return (
+    <campo-numerico ref={ref} value="0">Número:</campo-numerico>
+  );
+}`;
+
+const vueCode = `<script setup>
+import { ref } from 'vue';
+const valor = ref(0);
+// @change se compila a addEventListener('change'). Limpio.
+const onChange = (e) => (valor.value = e.detail.value);
+<\/script>
+
+<template>
+  <campo-numerico @change="onChange" value="0">Número:</campo-numerico>
+</template>
+
+<!-- Recuerda el isCustomElement en astro.config.mjs -->`;
+
+const svelteCode = `<script>
+  import { onMount } from 'svelte';
+  let el;
+  let valor = 0;
+  onMount(() => {
+    const onChange = (e) => (valor = e.detail.value);
+    el.addEventListener('change', onChange);
+    return () => el.removeEventListener('change', onChange);
+  });
+<\/script>
+
+<campo-numerico bind:this={el} value="0">Número:</campo-numerico>`;
+---
+
+<DocsLayout title="Campo numérico">
+  <p class="eyebrow">Componente · 01</p>
+  <h1>&lt;campo-numerico&gt;</h1>
+  <p class="lead">Un input numérico con botones para incrementar y decrementar.</p>
+
+<p>
+  Atributo <code>value</code> con el número inicial (lo refleja y observa),
+  y emite un evento <code>change</code> con <code>detail.value</code> cada vez
+  que cambia — ya sea con los botones o escribiendo directo.
+</p>
+
+  <h2>Pruébalo</h2>
+  <p>Edita el HTML y mira el resultado. Vive dentro de su propio shadow boundary.</p>
+  <Playground code={ejemploInicial} modules={[campoSrc]} height={140} />
+
+ <h2>El mismo componente, en cada framework</h2>
+<p>
+  Esto es lo interesante: <strong>no hay versiones distintas del componente</strong>.
+  Es el mismo <code>&lt;campo-numerico&gt;</code>. Solo cambia cómo cada framework
+  se suscribe a su evento <code>change</code>.
+</p>
+
+  <CodeTabs
+    tabs={[
+      { label: 'HTML', lang: 'html', code: htmlCode },
+      { label: 'React', lang: 'jsx', code: reactCode },
+      { label: 'Vue', lang: 'vue', code: vueCode },
+      { label: 'Svelte', lang: 'svelte', code: svelteCode },
+    ]}
+  />
+
+  <div class="note">
+    <strong>El detalle que vale documentar:</strong> Vue mapea <code>@change</code>
+    a <code>addEventListener</code> automáticamente. React y Svelte no tienen azúcar
+    fiable para eventos custom, así que usas un ref + <code>addEventListener</code> — que,
+    de paso, es la forma que funciona en todos lados.
+  </div>
+
+  <h2>Islas vivas</h2>
+  <p>Las tres demos de abajo son islas reales hidratadas, cada una en su framework:</p>
+
+  <p class="eyebrow">React</p>
+  <CampoReact client:visible />
+
+  <p class="eyebrow">Vue</p>
+  <CampoVue client:visible />
+
+  <p class="eyebrow">Svelte</p>
+  <CampoSvelte client:visible />
+</DocsLayout>
